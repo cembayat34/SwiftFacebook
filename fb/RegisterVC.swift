@@ -38,7 +38,7 @@ import UIKit
     @IBAction func btnRegisterClicked(_ sender: Any) {
         
         // STEP 1. Declaring url of the request; declaring the body to the URL; declaring request with the safest method - POST, that no one can grab our info
-        let url = URL(string: "http://192.168.1.34/fb/register.php")!
+        let url = URL(string: "http://\(Ip().ip)/fb/register.php")!
         let body = "email=\(txtEmail.text!)&firstName=\(txtFirstName.text!)&lastName=\(txtLastName.text!)&password=\(txtPassword.text!)&birthday=\(txtBirthday.text!)&gender=\(txtGender.text!)"
         //print(body)
         var request = URLRequest(url: url)

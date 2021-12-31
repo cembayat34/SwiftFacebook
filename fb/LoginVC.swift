@@ -32,7 +32,7 @@ class LoginVC: UIViewController {
     func loginRequest(){
         
             //server a istek gönderme
-            let url = URL(string: "http://192.168.1.34/fb/login.php")!
+        let url = URL(string: "http://\(Ip().ip)/fb/login.php")!
             let body = "email=\(self.txtEmail.text!)&password=\(self.txtPassword.text!)"
             var request = URLRequest(url: url)
             request.httpBody = body.data(using: .utf8)

@@ -15,6 +15,8 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
     var isCover : Bool = false
     var isAva : Bool = false
     @IBOutlet weak var lblFullName: UILabel!
+    @IBOutlet weak var btnAddBio: UIButton!
+    @IBOutlet weak var lblBio: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,62 +24,52 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
         // Do any additional setup after loading the view.
         imgCover.isUserInteractionEnabled = true
         imgAva.isUserInteractionEnabled = true
+        lblBio.isUserInteractionEnabled = true
         
         let gestureRecognizer1 = UITapGestureRecognizer(target: self, action: #selector(imgHomeCoverTapped))
         let gestureRecognizer2 = UITapGestureRecognizer(target: self, action: #selector(imgUserTapped))
+        let gestureRecognizer3 = UITapGestureRecognizer(target: self, action: #selector(lblBioTapped))
         
         imgCover.addGestureRecognizer(gestureRecognizer1)
         imgAva.addGestureRecognizer(gestureRecognizer2)
+        lblBio.addGestureRecognizer(gestureRecognizer3)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(loadUser), name: NSNotification.Name(rawValue: "updateBio"), object: nil)
         
         configure_imgUser()
-        
         loadUser()
         
     }
     
     
-    func loadUser(){
+    @objc func loadUser(){
         
         // safe method of accessing user related informaiton in glob var
         guard let firstName = currentUser?["firstName"],
               let lastName = currentUser?["lastName"],
               let avaPath = currentUser?["ava"],
-              let coverPath = currentUser?["cover"]
+              let coverPath = currentUser?["cover"],
+              let bio = currentUser?["bio"]
         else {
             return
         }
         
         lblFullName.text = "\((firstName as! String).capitalized) \((lastName as! String).capitalized)"
         
-        downloadImage(from: avaPath as! String, showIn: imgAva)
-        downloadImage(from: coverPath as! String, showIn: imgCover)
-    }
-    
-    func downloadImage(from path : String, showIn imageView : UIImageView){
-        // if avaPath string having a valid url, IT'S NOT EMPTY (e.g. ava isn't assigned, than in db the link is stored as blank string)
-        if String(describing: path).isEmpty == false {
-            DispatchQueue.main.async {
-                // converting url string to the valid url
-                if let url = URL(string: (path as! String)){
-                    
-                    // downloading all data form URL
-                    guard let data = try? Data(contentsOf: url) else {
-                        imageView.image = UIImage(named: "user.png")
-                        return
-                    }
-                    
-                    // converting downloaded data to the image
-                    guard let image = UIImage(data: data) else {
-                        imageView.image = UIImage(named: "user.png")
-                        return
-                    }
-                    
-                    // assignin image to the imageView
-                    imageView.image = image
-                }
-            }
+        Helper().downloadImage(from: avaPath as! String, showIn: self.imgAva, orShow: "user.jpg")
+        Helper().downloadImage(from: coverPath as! String, showIn: self.imgCover, orShow: "HomeCover.jpg")
+        
+        if(bio as! String).isEmpty {
+            btnAddBio.isHidden = false
+            lblBio.isHidden = true
+        } else {
+            btnAddBio.isHidden = true
+            lblBio.isHidden = false
+            lblBio.text = bio as? String
         }
     }
+    
+  
     
     func configure_imgUser(){
         let border = CALayer()
@@ -101,6 +93,32 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
         print("ava")
         imageViewTapped = "ava"
         showActionSheet()
+    }
+    
+    @objc func lblBioTapped(){
+        print("bio")
+        let sheet = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        
+        let edit = UIAlertAction(title: "New Bio", style: UIAlertAction.Style.default) { action in
+            //code
+            
+            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "BioVC")
+            self.present(vc, animated: true, completion: nil)
+        }
+        
+        let delete = UIAlertAction(title: "Delete", style: UIAlertAction.Style.destructive) { action in
+            //code
+            self.deleteBio()
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil)
+        
+        sheet.addAction(edit)
+        sheet.addAction(delete)
+        sheet.addAction(cancel)
+        
+        self.present(sheet, animated: true, completion: nil)
+        
     }
     
     func showActionSheet(){
@@ -181,6 +199,8 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
     }
     
     
+    
+    
     func uploadImage(from imageView: UIImageView) {
         
         let helper = Helper()
@@ -192,7 +212,7 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
         
         // STEP 1. Declare URL, Request and Pararameters
         // url
-        let url = URL(string: "http://192.168.1.34/fb/uploadImage.php")!
+        let url = URL(string: "http://\(Ip().ip)/fb/uploadImage.php")!
         var request = URLRequest(url: url)
         
         request.httpMethod = "POST"
@@ -257,6 +277,68 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
             
         }.resume()
         
+    }
+    
+    
+    func deleteBio(){
+        
+        guard let id = currentUser?["id"] else {return}
+        
+        let bio = String() // empty string
+        
+        let url = URL(string: "http://\(Ip().ip)/fb/updateBio.php")!
+        let body = "id=\(id)&bio=\(bio)"
+        var request = URLRequest(url: url)
+        request.httpBody = body.data(using: .utf8)
+        request.httpMethod = "POST"
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if error != nil {
+                    Helper().showAlert(title: "Error", message: error!.localizedDescription, vc: self)
+                    return
+                } else if data != nil {
+                    
+                    do {
+                        guard let data = data else {
+                            Helper().showAlert(title: "Data Error", message: error!.localizedDescription, vc: self)
+                            return
+                        }
+                        
+                        let json = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers) as? NSDictionary
+                        
+                        guard let parsedJSON = json else {
+                            Helper().showAlert(title: "Parsing Error", message: error!.localizedDescription, vc: self)
+                            return
+                        }
+                        print(parsedJSON)
+                        
+                        if parsedJSON["status"] as! String == "200" {
+                            
+                            currentUser = parsedJSON.mutableCopy() as? Dictionary<String, Any>
+                            DEFAULTS.set(currentUser, forKey: keyCURRENT_USER)
+                            
+                            // reload user
+                            self.loadUser()
+                            
+                            print(parsedJSON)
+                            
+                        }
+                        
+                        
+
+                        
+                        
+                    } catch {
+                        Helper().showAlert(title: "JSON Error", message: error.localizedDescription, vc: self)
+                    }
+                    
+                }
+                
+                
+                
+            }
+        }.resume()
     }
     
     
