@@ -80,4 +80,15 @@ class Helper {
         }
     }
     
+    
+    
+    func loadFullName(firstName : String, lastName : String, showIn label : UILabel){
+        
+        DispatchQueue.main.async {
+            label.text = "\(firstName.capitalized) \(lastName.capitalized)"
+        }
+        
+    }
+    
+    
 }

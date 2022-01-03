@@ -16,6 +16,7 @@
 		9A89BBC6276538EE004B65EE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A89BBC4276538EE004B65EE /* Main.storyboard */; };
 		9A89BBC8276538EF004B65EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A89BBC7276538EF004B65EE /* Assets.xcassets */; };
 		9A89BBCB276538EF004B65EE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A89BBC9276538EF004B65EE /* LaunchScreen.storyboard */; };
+		9AA8B1D7277F185800DA4316 /* PostVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA8B1D6277F185800DA4316 /* PostVC.swift */; };
 		9AB9AEB3277EF9A300047D04 /* Ip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9AEB2277EF9A300047D04 /* Ip.swift */; };
 		9AC826B32775045A004CA364 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC826B22775045A004CA364 /* SettingsVC.swift */; };
 		9AF2BB34277D9067005247A7 /* BioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF2BB33277D9067005247A7 /* BioVC.swift */; };
@@ -33,6 +34,7 @@
 		9A89BBC7276538EF004B65EE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9A89BBCA276538EF004B65EE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9A89BBCC276538EF004B65EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9AA8B1D6277F185800DA4316 /* PostVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostVC.swift; sourceTree = "<group>"; };
 		9AB9AEB2277EF9A300047D04 /* Ip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ip.swift; sourceTree = "<group>"; };
 		9AC826B22775045A004CA364 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		9AF2BB33277D9067005247A7 /* BioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BioVC.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				9A89BBC7276538EF004B65EE /* Assets.xcassets */,
 				9A89BBC9276538EF004B65EE /* LaunchScreen.storyboard */,
 				9A89BBCC276538EF004B65EE /* Info.plist */,
+				9AA8B1D6277F185800DA4316 /* PostVC.swift */,
 			);
 			path = fb;
 			sourceTree = "<group>";
@@ -160,6 +163,7 @@
 				9AF2BB34277D9067005247A7 /* BioVC.swift in Sources */,
 				9AB9AEB3277EF9A300047D04 /* Ip.swift in Sources */,
 				9A74FE942775E60F0041E7A5 /* HomeVC.swift in Sources */,
+				9AA8B1D7277F185800DA4316 /* PostVC.swift in Sources */,
 				9A8533B927746141003A10EB /* RegisterVC.swift in Sources */,
 				9A8533BB27746A4D003A10EB /* Helper.swift in Sources */,
 				9A89BBBF276538EE004B65EE /* AppDelegate.swift in Sources */,

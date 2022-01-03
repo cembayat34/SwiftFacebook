@@ -8,5 +8,5 @@
 import Foundation
 
 struct Ip {
-    let ip = "10.51.5.181"
+    let ip : String = "10.51.5.181"
 }

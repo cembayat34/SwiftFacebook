@@ -236,7 +236,7 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
                 
                 
                 if error != nil {
-                    helper.showAlert(title: "Data Error", message: error!.localizedDescription, vc: self)
+                    helper.showAlert(title: "Server Error", message: error!.localizedDescription, vc: self)
                     return
                 }
                 
