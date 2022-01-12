@@ -54,6 +54,21 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
             return
         }
         
+        if (avaPath as! String).count > 10 {
+            isAva = true
+        } else {
+            imgAva.image = UIImage(named: "user.png")
+            isAva = false
+        }
+        
+        if (coverPath as! String).count > 10 {
+            isCover = true
+        } else {
+            imgCover.image = UIImage(named: "HomeCover.jpg")
+            isCover = false
+        }
+        
+        
         lblFullName.text = "\((firstName as! String).capitalized) \((lastName as! String).capitalized)"
         
         Helper().downloadImage(from: avaPath as! String, showIn: self.imgAva, orShow: "user.jpg")
@@ -102,7 +117,7 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
         let edit = UIAlertAction(title: "New Bio", style: UIAlertAction.Style.default) { action in
             //code
             
-            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "BioVC")
+            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NavigationBioVC")
             self.present(vc, animated: true, completion: nil)
         }
         

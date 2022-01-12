@@ -18,6 +18,7 @@
 		9A89BBCB276538EF004B65EE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A89BBC9276538EF004B65EE /* LaunchScreen.storyboard */; };
 		9AA8B1D7277F185800DA4316 /* PostVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA8B1D6277F185800DA4316 /* PostVC.swift */; };
 		9AB9AEB3277EF9A300047D04 /* Ip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB9AEB2277EF9A300047D04 /* Ip.swift */; };
+		9AC669BD278B0E420014E00F /* EditVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC669BC278B0E420014E00F /* EditVC.swift */; };
 		9AC826B32775045A004CA364 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC826B22775045A004CA364 /* SettingsVC.swift */; };
 		9AF2BB34277D9067005247A7 /* BioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF2BB33277D9067005247A7 /* BioVC.swift */; };
 /* End PBXBuildFile section */
@@ -36,6 +37,7 @@
 		9A89BBCC276538EF004B65EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9AA8B1D6277F185800DA4316 /* PostVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostVC.swift; sourceTree = "<group>"; };
 		9AB9AEB2277EF9A300047D04 /* Ip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ip.swift; sourceTree = "<group>"; };
+		9AC669BC278B0E420014E00F /* EditVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditVC.swift; sourceTree = "<group>"; };
 		9AC826B22775045A004CA364 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		9AF2BB33277D9067005247A7 /* BioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BioVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -78,12 +80,13 @@
 				9AC826B22775045A004CA364 /* SettingsVC.swift */,
 				9A8533BA27746A4D003A10EB /* Helper.swift */,
 				9AF2BB33277D9067005247A7 /* BioVC.swift */,
+				9AA8B1D6277F185800DA4316 /* PostVC.swift */,
+				9AC669BC278B0E420014E00F /* EditVC.swift */,
 				9AB9AEB2277EF9A300047D04 /* Ip.swift */,
 				9A89BBC4276538EE004B65EE /* Main.storyboard */,
 				9A89BBC7276538EF004B65EE /* Assets.xcassets */,
 				9A89BBC9276538EF004B65EE /* LaunchScreen.storyboard */,
 				9A89BBCC276538EF004B65EE /* Info.plist */,
-				9AA8B1D6277F185800DA4316 /* PostVC.swift */,
 			);
 			path = fb;
 			sourceTree = "<group>";
@@ -159,6 +162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9AC669BD278B0E420014E00F /* EditVC.swift in Sources */,
 				9A89BBC3276538EE004B65EE /* LoginVC.swift in Sources */,
 				9AF2BB34277D9067005247A7 /* BioVC.swift in Sources */,
 				9AB9AEB3277EF9A300047D04 /* Ip.swift in Sources */,

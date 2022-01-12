@@ -26,7 +26,7 @@ class BioVC: UIViewController{
         
         loadUser()
         configure_imgAva()
-        configure_btn()
+        
     }
     
  
@@ -59,10 +59,7 @@ class BioVC: UIViewController{
         imgAva.clipsToBounds = true
     }
     
-    func configure_btn(){
-        btnSave.layer.cornerRadius = 10
-        btnCancel.layer.cornerRadius = 10
-    }
+   
     
     
     func uploadBio(){
