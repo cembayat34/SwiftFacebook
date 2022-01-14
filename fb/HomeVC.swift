@@ -36,6 +36,9 @@ class HomeVC: UIViewController,UIImagePickerControllerDelegate & UINavigationCon
         
         NotificationCenter.default.addObserver(self, selector: #selector(loadUser), name: NSNotification.Name(rawValue: "updateBio"), object: nil)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(loadUser), name: NSNotification.Name(rawValue: "updateUser"), object: nil)
+
+        
         configure_imgUser()
         loadUser()
         

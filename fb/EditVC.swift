@@ -63,6 +63,32 @@ class EditVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
     
     @IBAction func btnSave_clicked(_ sender: Any) {
         updateUser()
+        
+        if isAvaChanged == true {
+            uploadImage(from: imgAva, type: "ava") {
+                Helper().showAlert(title: "Success!", message: "Ava has been updated", vc: self)
+            }
+        }
+        
+        if isCoverChanged == true {
+            uploadImage(from: imgCover, type: "cover") {
+                Helper().showAlert(title: "Success!", message: "Cover has been updated", vc: self)
+            }
+        }
+        
+        if isAvaChanged == true && isCoverChanged == true {
+            
+            uploadImage(from: imgAva, type: "ava") {
+                self.uploadImage(from: self.imgCover, type: "cover") {
+                    Helper().showAlert(title: "Success!", message: "Cover and Ava have been updated", vc: self)
+                }
+            }
+            
+        }
+        
+        // sending notification to other vcs
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateUser"), object: nil)
+        
     }
     
     
@@ -70,9 +96,6 @@ class EditVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
         guard let id = currentUser?["id"] else {
             return
         }
-        
-        
-        
         
         let email = txtEmail.text!
         let firstName = txtFirstName.text!
@@ -113,7 +136,25 @@ class EditVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                         return
                     }
                     
-                    print(parsedJSON)
+                    if parsedJSON["status"] as! String == "200" {
+                        
+                        currentUser = parsedJSON.mutableCopy() as? Dictionary<String, Any>
+                        DEFAULTS.set(currentUser, forKey: keyCURRENT_USER)
+                    
+                        Helper().showAlert(title: "Success!", message: "User is updated successfully", vc: self)
+                        
+                        print(currentUser!)
+                        
+                        // sending notification to other vcs
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateUser"), object: nil)
+                        
+                    } else {
+                        if parsedJSON["message"] != nil {
+                            let message = parsedJSON["message"] as! String
+                            Helper().showAlert(title: "", message: message, vc: self)
+                        }
+                        
+                    }
 
                     
                 } catch {
@@ -151,6 +192,21 @@ class EditVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
         
         Helper().downloadImage(from: coverPath as! String, showIn: self.imgCover, orShow: "HomeCover.jpg")
         Helper().downloadImage(from: avaPath as! String, showIn: self.imgAva, orShow: "user.jpg")
+        
+        if (avaPath as! String).count > 10 {
+            isAva = true
+        } else {
+            imgAva.image = UIImage(named: "user.png")
+            isAva = false
+        }
+        
+        if (coverPath as! String).count > 10 {
+            isCover = true
+        } else {
+            imgCover.image = UIImage(named: "HomeCover.jpg")
+            isCover = false
+        }
+        
     }
     
     func configure_imgAva(){
@@ -242,93 +298,115 @@ class EditVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
         
         if imageViewTapped == "cover" {
             self.imgCover.image = image
-            self.uploadImage(from: self.imgCover)
+            //self.uploadImage(from: self.imgCover)
         } else if imageViewTapped == "ava" {
             self.imgAva.image = image
-            self.uploadImage(from: self.imgAva)
+            //self.uploadImage(from: self.imgAva)
         }
         
         self.dismiss(animated: true) {
             if self.imageViewTapped == "cover" {
                 self.isCover = true
+                self.isCoverChanged = true
             } else if self.imageViewTapped == "ava" {
                 self.isAva = true
+                self.isAvaChanged = true
             }
         }
     }
     
-    func uploadImage(from imageView: UIImageView) {
+    // sends request to the server to upload the Image (ava/cover)
+    func uploadImage(from imageView: UIImageView, type: String, completion: @escaping () -> Void) {
         
-        let helper = Helper()
-        
-        // güvenilir yoldan currentUserin idsine erişme
+        // save method of accessing ID of current user
         guard let id = currentUser?["id"] else {
             return
         }
         
-        // STEP 1. Declare URL, Request and Pararameters
-        // url
+        // STEP 1. Declare URL, Request and Params
+        // url we gonna access (API)
         let url = URL(string: "http://\(Ip().ip)/fb/uploadImage.php")!
+        
+        // declaring reqeust with further configs
         var request = URLRequest(url: url)
         
+        // POST - safest method of passing data to the server
         request.httpMethod = "POST"
         
         // values to be sent to the server under keys (e.g. ID, TYPE)
-        let params = ["id" : id, "type": imageViewTapped]
+        let params = ["id": id, "type": type]
         
         // MIME Boundary, Header
         let boundary = "Boundary-\(NSUUID().uuidString)"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         
+        // if in the imageView is placeholder - send no picture to the server
         // Compressing image and converting image to 'Data' type
-        let imageData = UIImage.jpegData(imageView.image!)(compressionQuality: 0.5)!
+        var imageData = Data()
         
-        // Assigning full body to the request to be sent to the server
-        request.httpBody = Helper().body(with: params, filename: "\(imageViewTapped).jpg", filePathKey: "file", imageDatakey: imageData, boundary: boundary) as Data
+        if imageView.image != UIImage(named: "HomeCover.jpg") && imageView.image != UIImage(named: "user.png") {
+            imageData = imageView.image!.jpegData(compressionQuality: 0.5)!
+        }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        // assigning full body to the request to be sent to the server
+        request.httpBody = Helper().body(with: params, filename: "\(type).jpg", filePathKey: "file", imageDatakey: imageData, boundary: boundary) as Data
+        
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
             DispatchQueue.main.async {
-            
+                
+                // error occured
                 if error != nil {
-                    helper.showAlert(title: "Server Error", message: error!.localizedDescription, vc: self)
+                    Helper().showAlert(title: "Server Error", message: error!.localizedDescription, vc: self)
                     return
                 }
                 
+                
                 do {
+                    
                     // save mode of casting any data
                     guard let data = data else {
-                        helper.showAlert(title: "Data Error", message: error?.localizedDescription ?? "Eroor", vc: self)
+                        Helper().showAlert(title: "Data Error", message: error!.localizedDescription, vc: self)
                         return
                     }
                     
-                    let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? NSDictionary
+                    // fetching JSON generated by the server - php file
+                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? NSDictionary
                     
+                    // save method of accessing json constant
                     guard let parsedJSON = json else {
                         return
                     }
                     
-                    //uploaded successfully
+                    // uploaded successfully
                     if parsedJSON["status"] as! String == "200" {
                         
+                        // saving upaded user related information (e.g. ava's path, cover's path)
                         // saving updated user related information (e.g. ava's path, cover's path)
                         currentUser = parsedJSON.mutableCopy() as? Dictionary<String, Any>
                         DEFAULTS.set(currentUser, forKey: keyCURRENT_USER)
                         print(parsedJSON)
+                        
+                        // sending notification to other vcs
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "updateUser"), object: nil)
+                        
+                        completion()
+                        
+                        // error while uploading
                     } else {
-                        // show the error message in alertView
+                        
+                        // show the error message in AlertView
                         if parsedJSON["message"] != nil {
                             let message = parsedJSON["message"] as! String
-                            helper.showAlert(title: "Error", message: message, vc: self)
+                            Helper().showAlert(title: "Error", message: message, vc: self)
                         }
+                        
                     }
                     
                 } catch {
-                   
-                    helper.showAlert(title: "JSON Error", message: error.localizedDescription, vc: self)
+                    Helper().showAlert(title: "JSON Error", message: error.localizedDescription, vc: self)
                 }
                 
             }
-            
         }.resume()
         
     }
