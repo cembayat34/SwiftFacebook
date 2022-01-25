@@ -122,6 +122,9 @@ class PostVC: UIViewController {
                     guard let parsedJSON = json else {return}
                     
                     if parsedJSON["status"] as! String == "200" {
+                        
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "uploadPost"), object: nil)
+                        
                         self.dismiss(animated: true, completion: nil)
                         print(json)
                     } else {

@@ -177,7 +177,7 @@ class EditVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
         guard let firstName = currentUser?["firstName"],
             let lastName = currentUser?["lastName"],
             let email = currentUser?["email"],
-            let birthday = currentUser?["birthday"],
+            let birthday = currentUser?["birthday"] as? String,
             let gender = currentUser?["gender"],
             let avaPath = currentUser?["ava"],
             let coverPath = currentUser?["cover"] else {
@@ -189,6 +189,16 @@ class EditVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
         txtEmail.text = "\(email)"
         txtBirthday.text = "\(birthday)"
         txtGender.text = "\(gender)"
+        
+        // STEP 1 - To Show the Date in the UI format: To place string of date in the valid date format to convert to the Date Type
+        let formatterGet = DateFormatter()
+        formatterGet.dateFormat = "yyyy-MM-dd HH:mm:ss 0000"
+        let date = formatterGet.date(from: birthday)!
+        
+        // STEP 2 -To Show the Date in the UI format: To declare a new format of showing the date to the users
+        let formatterShow = DateFormatter()
+        formatterShow.dateFormat = "MMM dd, yyyy"
+        txtBirthday.text = formatterShow.string(from: date)
         
         Helper().downloadImage(from: coverPath as! String, showIn: self.imgCover, orShow: "HomeCover.jpg")
         Helper().downloadImage(from: avaPath as! String, showIn: self.imgAva, orShow: "user.jpg")
