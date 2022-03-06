@@ -13,6 +13,7 @@ class NoPicCell: UITableViewCell {
     @IBOutlet weak var lblFullName: UILabel!
     @IBOutlet weak var lblDate: UILabel!
     @IBOutlet weak var lblPostText: UILabel!
+    @IBOutlet weak var btnLike: UIButton!
     
     
     override func awakeFromNib() {

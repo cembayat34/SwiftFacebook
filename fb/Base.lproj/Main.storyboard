@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -800,6 +800,9 @@
                                             <buttonConfiguration key="configuration" style="plain" image="unlike" title="Like">
                                                 <fontDescription key="titleFontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="15"/>
                                             </buttonConfiguration>
+                                            <connections>
+                                                <action selector="btnLikeClicked:" destination="Mf6-k1-dNM" eventType="touchUpInside" id="526-zr-87K"/>
+                                            </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vha-T4-g4c">
                                             <rect key="frame" x="106" y="108" width="67" height="31"/>
@@ -829,6 +832,7 @@
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="btnLike" destination="QOO-Xk-pJh" id="Nr4-t7-3ar"/>
                                     <outlet property="imgAva" destination="NPd-sc-J33" id="WRB-IA-yNh"/>
                                     <outlet property="lblDate" destination="qpE-mq-ck5" id="edY-Ey-uMA"/>
                                     <outlet property="lblFullName" destination="UZt-6f-aLG" id="9Vh-xw-uOv"/>
@@ -865,9 +869,12 @@
                                             <rect key="frame" x="20" y="486" width="78" height="39"/>
                                             <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <state key="normal" title="Button"/>
-                                            <buttonConfiguration key="configuration" style="plain" image="like" title="Like">
+                                            <buttonConfiguration key="configuration" style="plain" image="unlike" title="Like">
                                                 <fontDescription key="titleFontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="15"/>
                                             </buttonConfiguration>
+                                            <connections>
+                                                <action selector="btnLikeClicked:" destination="Mf6-k1-dNM" eventType="touchUpInside" id="rMF-ex-cE6"/>
+                                            </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0D9-If-eil">
                                             <rect key="frame" x="106" y="494" width="67" height="31"/>
@@ -912,6 +919,7 @@
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="btnLike" destination="49g-mJ-4TB" id="j9t-Iq-zf6"/>
                                     <outlet property="imgAva" destination="1kt-F6-ClO" id="GGi-Fz-6bl"/>
                                     <outlet property="imgPostPic" destination="NU8-zx-Dfs" id="bpf-fY-e4w"/>
                                     <outlet property="lblDate" destination="uvr-Rd-igw" id="INf-mm-Vuh"/>
@@ -925,7 +933,7 @@
                             <outlet property="delegate" destination="Mf6-k1-dNM" id="wYe-9f-0eF"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" title="" image="homeIcon" selectedImage="homeIcon" id="byK-WP-uLn"/>
+                    <navigationItem key="navigationItem" id="oWg-uA-Ey6"/>
                     <connections>
                         <outlet property="btnAddBio" destination="OiH-SU-4hQ" id="MPe-D5-BDd"/>
                         <outlet property="imgAva" destination="rJr-1t-w2a" id="MCO-EH-hrH"/>
@@ -936,7 +944,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wY5-se-n3e" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1003" y="976"/>
+            <point key="canvasLocation" x="1712" y="976"/>
         </scene>
         <!--PostVC-->
         <scene sceneID="QT7-SW-IlQ">
@@ -1065,7 +1073,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J0n-95-vSG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1712" y="976"/>
+            <point key="canvasLocation" x="2457" y="976"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="GLE-hi-3Lt">
@@ -1078,7 +1086,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="Mf6-k1-dNM" kind="relationship" relationship="viewControllers" id="SZD-a2-oae"/>
+                        <segue destination="Pxn-CM-B6I" kind="relationship" relationship="viewControllers" id="SZD-a2-oae"/>
                         <segue destination="MfN-SQ-SQT" kind="relationship" relationship="viewControllers" id="MoI-Up-OB1"/>
                     </connections>
                 </tabBarController>
@@ -1322,10 +1330,28 @@
             </objects>
             <point key="canvasLocation" x="287" y="2407"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="eYZ-Wf-qlO">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="Pxn-CM-B6I" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="" image="homeIcon" selectedImage="homeIcon" id="byK-WP-uLn"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="8Tk-WS-rFz">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Mf6-k1-dNM" kind="relationship" relationship="rootViewController" id="vff-df-6aI"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dyX-hr-jU1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1002.8985507246377" y="975.66964285714278"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="H6L-I0-SZC"/>
-        <segue reference="Qou-Fy-mIE"/>
+        <segue reference="HbO-4k-RKC"/>
         <segue reference="vme-CP-Fcs"/>
     </inferredMetricsTieBreakers>
     <resources>
@@ -1340,7 +1366,6 @@
         <image name="gear" catalog="system" width="128" height="119"/>
         <image name="homeIcon" width="25" height="25"/>
         <image name="house" catalog="system" width="128" height="106"/>
-        <image name="like" width="25" height="25"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
         <image name="unlike" width="25" height="25"/>
         <image name="user" width="300" height="300"/>

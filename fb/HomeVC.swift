@@ -26,6 +26,7 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
     var skip = 0
     var limit = 10
     var isLoading = false
+    var liked = [Int]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,19 +116,16 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
     }
     
     @objc func imgHomeCoverTapped(){
-        print("cover")
         imageViewTapped = "cover"
         showActionSheet()
     }
     
     @objc func imgUserTapped(){
-        print("ava")
         imageViewTapped = "ava"
         showActionSheet()
     }
     
     @objc func lblBioTapped(){
-        print("bio")
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         
         let edit = UIAlertAction(title: "New Bio", style: UIAlertAction.Style.default) { action in
@@ -156,19 +154,16 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         
         let camera = UIAlertAction(title: "Camera", style: UIAlertAction.Style.default) { action in
-            print("go to camera")
             self.openCamera()
         }
         
         let library = UIAlertAction(title: "Library", style: UIAlertAction.Style.default) { action in
-            print("go to library")
             self.openPhotoLibrary()
         }
         
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil)
         
         let delete = UIAlertAction(title: "Delete", style: UIAlertAction.Style.destructive) { action in
-            print("Delete")
             if self.imageViewTapped == "cover"{
                 self.imgCover.image = UIImage(named: "HomeCover.png")
                 self.isCover = false
@@ -370,6 +365,8 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
     
     // loading posts from the server via PHP protocol
     func loadPosts(offset : Int, limit : Int){
+ 
+        isLoading = true
         
         // accessing id of the user : safe mode
         guard let id = currentUser?["id"] else {
@@ -396,6 +393,7 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     // access data - safe mode
                     guard let data = data else {
                         Helper().showAlert(title: "Data error", message: error?.localizedDescription ?? "data error", vc: self)
+                        self.isLoading = false
                         return
                     }
                     
@@ -409,12 +407,33 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     
                     print(posts)
                     
+                    // assigning all successfly loaded posts to our class var - posts (after it got loaded successfully)
                     self.posts = posts
+                    
+                    // we are skipping already loaded numb of posts for the next load - pagination
                     self.skip = posts.count
+                    
+                    // clean up likes for the refetching
+                    self.liked.removeAll(keepingCapacity: false)
+                    
+                    // logic of tracking liked posts
+                    for post in posts {
+                        if post["liked"] is NSNull {
+                            self.liked.append(Int())
+                        } else {
+                            self.liked.append(1)
+                        }
+                    }
+                    
+                    
                     self.tableView.reloadData()
+                    
+                    self.isLoading = false
+
                     
                 } catch{
                     Helper().showAlert(title: "JSON error", message: error.localizedDescription, vc: self)
+                    self.isLoading = false
                     return
                 }
                 
@@ -469,9 +488,19 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     }
                     
                     print(posts)
+                
                     
                     self.posts.append(contentsOf: posts)
                     self.skip += posts.count
+                    
+                    // logic of tracking liked posts
+                    for post in posts {
+                        if post["liked"] is NSNull {
+                            self.liked.append(Int())
+                        } else {
+                            self.liked.append(1)
+                        }
+                    }
                     
                     self.tableView.beginUpdates()
                     
@@ -547,8 +576,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                         if let image = UIImage(named: "user.png") {
                             
                             self.avas.append(image)
-                            print("AVA assigned")
-                            
                             DispatchQueue.main.async {
                                 cell.imgAva.image = image
                             }
@@ -559,8 +586,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     if let image = UIImage(data: data!) {
                         
                         self.avas.append(image)
-                        print("AVA loaded")
-                        
                         DispatchQueue.main.async {
                             cell.imgAva.image = image
                         }
@@ -570,8 +595,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                 
                 // cached ava
             } else {
-                print("AVA cached")
-                
                 DispatchQueue.main.async {
                     cell.imgAva.image = self.avas[indexPath.row]
                 }
@@ -579,6 +602,19 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
             
             // picture logic
             pictures.append(UIImage())
+            
+            // get the index of the cell in order to get the certain post's id
+            cell.btnLike.tag = indexPath.row
+            
+            // manipuling the appearance of the button based is the post has been liken or not
+            DispatchQueue.main.async {
+                if self.liked[indexPath.row] == 1 {
+                    cell.btnLike.setImage(UIImage(named: "like.png"), for: .normal)
+                } else {
+                    cell.btnLike.setImage(UIImage(named: "unlike.png"), for: .normal)
+                }
+            }
+            
             
             // picture in the post
         } else {
@@ -622,8 +658,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                         if let image = UIImage(named: "user.png") {
                             
                             self.avas.append(image)
-                            print("AVA assigned")
-                            
                             DispatchQueue.main.async {
                                 cell.imgAva.image = image
                             }
@@ -634,8 +668,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     if let image = UIImage(data: data!) {
                         
                         self.avas.append(image)
-                        print("AVA loaded")
-                        
                         DispatchQueue.main.async {
                             cell.imgAva.image = image
                         }
@@ -644,8 +676,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                 
                 // cached ava
             } else {
-                print("AVA cached")
-                
                 DispatchQueue.main.async {
                     cell.imgAva.image = self.avas[indexPath.row]
                 }
@@ -666,8 +696,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                         if let image = UIImage(named: "user.png") {
                             
                             self.pictures.append(image)
-                            print("PIC assigned")
-                            
                             DispatchQueue.main.async {
                                 cell.imgPostPic.image = image
                             }
@@ -678,8 +706,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     if let image = UIImage(data: data!) {
                         
                         self.pictures.append(image)
-                        print("PIC loaded")
-                        
                         DispatchQueue.main.async {
                             cell.imgPostPic.image = image
                         }
@@ -689,12 +715,23 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                 
                 // cached picture
             } else {
-                print("PIC cached")
-                
                 DispatchQueue.main.async {
                     cell.imgPostPic.image = self.pictures[indexPath.row]
                 }
             }
+            
+            // get the index of the cell in order to get the certain post's id
+            cell.btnLike.tag = indexPath.row
+            
+            // manipuling the appearance of the button based is the post has been liken or not
+            DispatchQueue.main.async {
+                if self.liked[indexPath.row] == 1 {
+                    cell.btnLike.setImage(UIImage(named: "like.png"), for: .normal)
+                } else {
+                    cell.btnLike.setImage(UIImage(named: "unlike.png"), for: .normal)
+                }
+            }
+            
         }
     }
     
@@ -773,8 +810,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                         if let image = UIImage(named: "user.png") {
                             
                             self.avas.append(image)
-                            print("AVA assigned")
-                            
                             DispatchQueue.main.async {
                                 cell.imgAva.image = image
                             }
@@ -785,8 +820,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     if let image = UIImage(data: data!) {
                         
                         self.avas.append(image)
-                        print("AVA loaded")
-                        
                         DispatchQueue.main.async {
                             cell.imgAva.image = image
                         }
@@ -796,8 +829,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                 
                 // cached ava
             } else {
-                print("AVA cached")
-                
                 DispatchQueue.main.async {
                     cell.imgAva.image = self.avas[indexPath.row]
                 }
@@ -805,6 +836,20 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
             
             // picture logic
             pictures.append(UIImage())
+            
+            // get the index of the cell in order to get the certain post's id
+            cell.btnLike.tag = indexPath.row
+            
+            // manipuling the appearance of the button based is the post has been liken or not
+            DispatchQueue.main.async {
+                if self.liked[indexPath.row] == 1 {
+                    cell.btnLike.setImage(UIImage(named: "like.png"), for: .normal)
+                } else {
+                    cell.btnLike.setImage(UIImage(named: "unlike.png"), for: .normal)
+                }
+            }
+            
+            
             return cell
             
             // picture in the post
@@ -854,8 +899,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                         if let image = UIImage(named: "user.png") {
                             
                             self.avas.append(image)
-                            print("AVA assigned")
-                            
                             DispatchQueue.main.async {
                                 cell.imgAva.image = image
                             }
@@ -866,10 +909,7 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     
                     // downloaded
                     if let image = UIImage(data: data!) {
-                        
                         self.avas.append(image)
-                        print("AVA loaded")
-                        
                         DispatchQueue.main.async {
                             cell.imgAva.image = image
                         }
@@ -878,8 +918,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                 
                 // cached ava
             } else {
-                print("AVA cached")
-                
                 DispatchQueue.main.async {
                     cell.imgAva.image = self.avas[indexPath.row]
                 }
@@ -901,8 +939,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                         if let image = UIImage(named: "user.png") {
                             
                             self.pictures.append(image)
-                            print("PIC assigned")
-                            
                             DispatchQueue.main.async {
                                 cell.imgPostPic.image = image
                             }
@@ -915,8 +951,6 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                     if let image = UIImage(data: data!) {
                         
                         self.pictures.append(image)
-                        print("PIC loaded")
-                        
                         DispatchQueue.main.async {
                             cell.imgPostPic.image = image
                         }
@@ -926,17 +960,117 @@ class HomeVC: UITableViewController, UIImagePickerControllerDelegate, UINavigati
                 
                 // cached picture
             } else {
-                print("PIC cached")
-                
                 DispatchQueue.main.async {
                     cell.imgPostPic.image = self.pictures[indexPath.row]
                 }
             }
+            
+            // get the index of the cell in order to get the certain post's id
+            cell.btnLike.tag = indexPath.row
+            
+            // manipuling the appearance of the button based is the post has been liken or not
+            DispatchQueue.main.async {
+                if self.liked[indexPath.row] == 1 {
+                    cell.btnLike.setImage(UIImage(named: "like.png"), for: .normal)
+                } else {
+                    cell.btnLike.setImage(UIImage(named: "unlike.png"), for: .normal)
+                }
+            }
+            
+            
             return cell
         }
     }
     
     
+    
+    
+    @IBAction func btnLikeClicked(_ likeButton: UIButton) {
+        
+        // change icon of the button
+        likeButton.setImage(UIImage(named: "like.png"), for: UIControl.State.normal)
+        
+        guard let user_id = currentUser?["id"] else {
+            return
+        }
+        
+        // get the index of the cell in order to access relevat post's id
+        let indexPathRow = likeButton.tag
+        
+        // access id of the certain post whic is related to the cell where the button like has been clicked
+        guard let post_id = posts[indexPathRow]!["id"] else {
+            return
+        }
+        
+        // building logic / trigger / switcher to like or unlike the post
+        var action = ""
+        if liked[indexPathRow] == 1 {
+            action = "delete"
+            // keep it front-end that this post (at this indexPath.row) has been liken
+            liked[indexPathRow] = Int()
+            
+            // change icon of the button
+            likeButton.setImage(UIImage(named: "unlike.png"), for: UIControl.State.normal)
+            
+        } else {
+            action = "insert"
+            // keep it front-end that this post (at this indexPath.row) has been liken
+            liked[indexPathRow] = 1
+            
+            // change icon of the button
+            likeButton.setImage(UIImage(named: "like.png"), for: UIControl.State.normal)
+        }
+        
+        
+        
+        UIView.animate(withDuration: 0.15) {
+            likeButton.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+        } completion: { completed in
+            UIView.animate(withDuration: 0.15) {
+                likeButton.transform = CGAffineTransform.identity
+            }
+        }
+        
+        
+
+
+        
+        let url = URL(string: "http://\(Ip().ip)/fb/like.php")!
+        let body = "post_id=\(post_id)&user_id=\(user_id)&action=\(action)"
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = body.data(using: .utf8)
+        
+        // send request
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                
+                if error != nil {
+                    Helper().showAlert(title: "Server error", message: error!.localizedDescription, vc: self)
+                    return
+                }
+                
+                do {
+                    // access in safe mode data received from the server
+                    guard let data = data else {
+                        Helper().showAlert(title: "Data error", message: error!.localizedDescription, vc: self)
+                        return
+                    }
+                    
+                    // converting data to json
+                    let json = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers) as? NSDictionary
+                    
+                    print(json)
+                    
+                } catch {
+                    Helper().showAlert(title: "JSON error", message: error.localizedDescription, vc: self)
+                    return
+                }
+                
+            }
+        }.resume()
+        
+    }
     
     
     

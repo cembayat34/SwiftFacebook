@@ -14,6 +14,9 @@ class PicCell: UITableViewCell {
     @IBOutlet weak var lblDate: UILabel!
     @IBOutlet weak var lblPostText: UILabel!
     @IBOutlet weak var imgPostPic: UIImageView!
+    @IBOutlet weak var btnLike: UIButton!
+
+   
     
 
     override func awakeFromNib() {
